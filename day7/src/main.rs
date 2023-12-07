@@ -76,40 +76,23 @@ impl Hand {
         let mut count_vec: Vec<usize> = counts.values().cloned().collect();
         count_vec.sort_unstable_by(|a, b| b.cmp(a));
 
-        // match is based on cards that are not a joker
+        if count_vec.len() == 0 {
+            count_vec.push(5);
+        } else {
+            count_vec[0] += joker_cnt;
+        }
+
         let typ = match (count_vec.get(0), count_vec.get(1)) {
             (Some(&5), _) => CardType::FiveOfKind,
-            (Some(&4), _) => match joker_cnt {
-                1 => CardType::FiveOfKind,
-                _ => CardType::FourOfKind,
-            },
+            (Some(&4), _) => CardType::FourOfKind,
             (Some(&3), Some(&2)) => CardType::FullHouse,
-            (Some(&3), _) => match joker_cnt {
-                2 => CardType::FiveOfKind,
-                1 => CardType::FourOfKind,
-                _ => CardType::ThreeOfKind,
-            },
-            (Some(&2), Some(&2)) => match joker_cnt {
-                1 => CardType::FullHouse,
-                _ => CardType::TwoPair,
-            },
-            (Some(&2), _) => match joker_cnt {
-                3 => CardType::FiveOfKind,
-                2 => CardType::FourOfKind,
-                1 => CardType::ThreeOfKind,
-                _ => CardType::OnePair,
-            },
-            _ => match joker_cnt {
-                5 => CardType::FiveOfKind,
-                4 => CardType::FiveOfKind,
-                3 => CardType::FourOfKind,
-                2 => CardType::ThreeOfKind,
-                1 => CardType::OnePair,
-                _ => CardType::HighCard,
-            },
+            (Some(&3), _) => CardType::ThreeOfKind,
+            (Some(&2), Some(&2)) => CardType::TwoPair,
+
+            (Some(&2), _) => CardType::OnePair,
+            _ => CardType::HighCard,
         };
 
-        //println!("Test: {:?} {}", typ, joker_cnt);
         Hand { cards, bid, typ }
     }
 
