@@ -1,3 +1,4 @@
+use std::cmp;
 use std::collections::{HashSet, VecDeque};
 
 #[derive(Clone, PartialEq, Eq, Hash)]
@@ -121,40 +122,33 @@ fn part2(input: &str) {
     let down = (1, 0);
     let mut max = 0;
 
-    // top
+    // top & bottom
     for i in 0..grid[0].len() {
-        let beam = Beam::new(down, (0, i as isize));
-        let res = get_energized_amount(&grid, beam);
-        if res > max {
-            max = res;
-        }
+        max = cmp::max(
+            max,
+            get_energized_amount(&grid, Beam::new(down, (0, i as isize))),
+        );
+
+        max = cmp::max(
+            max,
+            get_energized_amount(&grid, Beam::new(up, (grid.len() as isize - 1, i as isize))),
+        );
     }
 
-    // bottom
-    for i in 0..grid[0].len() {
-        let beam = Beam::new(up, (grid[0].len() as isize - 1, i as isize));
-        let res = get_energized_amount(&grid, beam);
-        if res > max {
-            max = res;
-        }
-    }
-
-    // left
+    // left & right
     for i in 0..grid.len() {
-        let beam = Beam::new(right, (i as isize, 0));
-        let res = get_energized_amount(&grid, beam);
-        if res > max {
-            max = res;
-        }
-    }
+        max = cmp::max(
+            max,
+            get_energized_amount(&grid, Beam::new(right, (i as isize, 0))),
+        );
 
-    // right
-    for i in 0..grid.len() {
-        let beam = Beam::new(left, (i as isize, grid.len() as isize - 1));
-        let res = get_energized_amount(&grid, beam);
-        if res > max {
-            max = res;
-        }
+        max = cmp::max(
+            max,
+            get_energized_amount(
+                &grid,
+                Beam::new(left, (i as isize, grid.len() as isize - 1)),
+            ),
+        )
     }
 
     println!("Part2: {} ", max);
